@@ -1,87 +1,76 @@
-import {
-  boolean,
-  timestamp,
-  pgTable,
-  text,
-  primaryKey,
-  integer,
-} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { timestamp, pgTable, text, integer } from 'drizzle-orm/pg-core';
 
-import type { AdapterAccountType } from 'next-auth/adapters';
-
-export const users = pgTable('user', {
+export const stories = pgTable('stories', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text('name'),
-  email: text('email').notNull(),
-  emailVerified: timestamp('emailVerified', { mode: 'date' }),
-  image: text('image'),
+  title: text('name').unique(),
+  content: text('email').notNull().unique(),
+  author: text('author').notNull(),
+  authorId: text('author_id').notNull(),
+  overview: text('overview').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const accounts = pgTable(
-  'account',
-  {
-    userId: text('userId')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccountType>().notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
-    refresh_token: text('refresh_token'),
-    access_token: text('access_token'),
-    expires_at: integer('expires_at'),
-    token_type: text('token_type'),
-    scope: text('scope'),
-    id_token: text('id_token'),
-    session_state: text('session_state'),
-  },
-  account => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  })
-);
-
-export const sessions = pgTable('session', {
-  sessionToken: text('sessionToken').primaryKey(),
-  userId: text('userId')
+export const patches = pgTable('patches', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  storyId: text('story_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
+    .references(() => stories.id),
+  content: text('email').notNull().unique(),
+  author: text('author').notNull(),
+  authorId: text('author_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const verificationTokens = pgTable(
-  'verificationToken',
-  {
-    identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
-  },
-  verificationToken => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
-  })
-);
+export const pendingPatches = pgTable('pending_patches', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  storyId: text('story_id')
+    .notNull()
+    .references(() => stories.id),
+  content: text('content').notNull().unique(),
+  author: text('author').notNull(),
+  authorId: text('author_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
 
-export const authenticators = pgTable(
-  'authenticator',
-  {
-    credentialID: text('credentialID').notNull().unique(),
-    userId: text('userId')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    providerAccountId: text('providerAccountId').notNull(),
-    credentialPublicKey: text('credentialPublicKey').notNull(),
-    counter: integer('counter').notNull(),
-    credentialDeviceType: text('credentialDeviceType').notNull(),
-    credentialBackedUp: boolean('credentialBackedUp').notNull(),
-    transports: text('transports'),
-  },
-  authenticator => ({
-    compositePK: primaryKey({
-      columns: [authenticator.userId, authenticator.credentialID],
-    }),
-  })
-);
+export const votes = pgTable('votes', {
+  patchId: text('patch_id')
+    .notNull()
+    .references(() => pendingPatches.id),
+  storyId: text('story_id')
+    .notNull()
+    .references(() => stories.id),
+  userId: text('user_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// relations
+export const storyRelation = relations(stories, ({ many }) => ({
+  patches: many(patches),
+}));
+
+export const patchRelation = relations(patches, ({ one }) => ({
+  story: one(stories, {
+    fields: [patches.storyId],
+    references: [stories.id],
+  }),
+}));
+
+export const pendingPatchRelation = relations(pendingPatches, ({ many }) => ({
+  votes: many(votes),
+}));
+
+export const voteRelation = relations(votes, ({ one }) => ({
+  patch: one(pendingPatches, {
+    fields: [votes.patchId],
+    references: [pendingPatches.id],
+  }),
+}));
