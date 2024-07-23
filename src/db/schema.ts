@@ -21,7 +21,7 @@ export const patches = pgTable('patches', {
   storyId: text('story_id')
     .notNull()
     .references(() => stories.id),
-  content: text('email').notNull().unique(),
+  content: text('content').notNull().unique(),
   author: text('author').notNull(),
   authorId: text('author_id').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
