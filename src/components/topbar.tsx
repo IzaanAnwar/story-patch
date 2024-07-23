@@ -18,7 +18,7 @@ export async function Topbar() {
         <MountainIcon className='h-6 w-6' />
         <span className='ml-2 text-lg font-semibold'>Storypatch</span>
       </Link>
-      <nav className='hidden space-x-4 md:flex'>
+      <nav className=' space-x-4 flex'>
         {isLoggedIn ? (
           <Button>
             <LogoutLink>Logout</LogoutLink>
