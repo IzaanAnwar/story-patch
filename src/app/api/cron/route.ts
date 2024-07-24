@@ -19,7 +19,7 @@ type StoryPatchMap = {
   ];
 };
 
-export const POST = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   try {
     const statement = sql`SELECT story_id, json_agg(json_build_object(
       'id', id, 
