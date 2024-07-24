@@ -12,6 +12,16 @@ export const stories = pgTable('stories', {
   overview: text('overview').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+  likes: integer('likes').notNull().default(0),
+});
+
+export const likes = pgTable('likes', {
+  storyId: text('story_id')
+    .notNull()
+    .references(() => stories.id)
+    .primaryKey(),
+  userId: text('user_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const patches = pgTable('patches', {
@@ -55,6 +65,7 @@ export const votes = pgTable('votes', {
 // relations
 export const storyRelation = relations(stories, ({ many }) => ({
   patches: many(patches),
+  allikes: many(likes),
 }));
 
 export const patchRelation = relations(patches, ({ one }) => ({
@@ -72,5 +83,12 @@ export const voteRelation = relations(votes, ({ one }) => ({
   patch: one(pendingPatches, {
     fields: [votes.patchId],
     references: [pendingPatches.id],
+  }),
+}));
+
+export const likeRelation = relations(likes, ({ one }) => ({
+  story: one(stories, {
+    fields: [likes.storyId],
+    references: [stories.id],
   }),
 }));

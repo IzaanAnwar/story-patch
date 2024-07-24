@@ -1,14 +1,14 @@
 'use server';
 import { db } from '@/db';
-import { patches, pendingPatches, stories } from '@/db/schema';
+import { likes, patches, pendingPatches, stories } from '@/db/schema';
 import { ZodError, z } from 'zod';
 import { getCurrUser } from './users';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, count, eq, like, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
 const storySchema = z.object({
   title: z.string().min(1),
-  content: z.string().min(100).max(500),
+  content: z.string().min(100).max(1000),
   overview: z.string().min(1),
 });
 
@@ -59,6 +59,8 @@ export async function createStory(data: z.infer<typeof storySchema>) {
 export async function getAllStrories() {
   try {
     const allStories = await db.query.stories.findMany();
+    console.log('GOt em');
+
     return {
       error: null,
       stories: allStories,
@@ -71,28 +73,27 @@ export async function getAllStrories() {
   }
 }
 
-export async function getStoryContributors(data: string) {
+export async function getStoryContributors(id: string) {
   try {
-    const storyId = z.string().uuid().parse(data);
-    const [totalCount] = await db
-      .select({ count: sql`COUNT(*)` })
-      .from(patches)
-      .where(eq(patches.storyId, storyId));
+    const storyId = z.string().uuid().parse(id);
+    const contributors = await db.query.patches.findMany({
+      where: eq(patches.storyId, storyId),
+    });
 
     return {
       error: null,
-      totalContributors: totalCount.count as number,
+      contributors,
     };
   } catch (error: any) {
     return {
       error: error?.message ?? 'Something went wrong. Please try again',
-      totalContributors: null,
+      contributors: null,
     };
   }
 }
 
 const storyPatchSchema = z.object({
-  content: z.string().min(100).max(500),
+  content: z.string().min(100).max(1000),
   storyId: z.string(),
 });
 export async function createStoryPatch(data: z.infer<typeof storyPatchSchema>) {
@@ -153,6 +154,7 @@ export async function getStroyPatches(data: string) {
       where: eq(stories.title, storyTitle),
       with: {
         patches: true,
+        allikes: true,
       },
     });
     return {
@@ -187,6 +189,56 @@ export async function getPendingPatches(data: string) {
     return {
       error: error?.message ?? 'Something went wrong. Please try again',
       patches: null,
+    };
+  }
+}
+
+export async function likeStrory(data: {
+  storyId: string;
+}): Promise<{ success: boolean; message: string }> {
+  try {
+    const user = await getCurrUser();
+    if (!user) {
+      throw new Error('You are not logged in');
+    }
+
+    const { storyId } = z.object({ storyId: z.string().uuid() }).parse(data);
+    const existingLike = await db.query.likes.findFirst({
+      where: and(eq(likes.storyId, storyId), eq(likes.userId, user.id)),
+    });
+
+    await db.transaction(async tx => {
+      if (existingLike) {
+        console.info('Deleting');
+        await tx
+          .delete(likes)
+          .where(and(eq(likes.storyId, storyId), eq(likes.userId, user.id)));
+        console.log('Deleted');
+      } else {
+        console.info('Inserting');
+
+        await tx.insert(likes).values({
+          userId: user.id,
+          storyId,
+        });
+        console.log('Totak iii');
+      }
+      const [totalLikes] = await tx
+        .select({ count: count(likes.storyId) })
+        .from(likes)
+        .where(eq(likes.storyId, storyId));
+
+      console.log('Total Likes', { totalLikes });
+
+      await tx.update(stories).set({ likes: totalLikes.count });
+    });
+    revalidatePath('/stories');
+    return { success: true, message: 'Liked' };
+  } catch (error: any) {
+    console.error(error);
+    return {
+      success: false,
+      message: error?.message ?? 'Something went wrong',
     };
   }
 }

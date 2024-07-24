@@ -1,4 +1,4 @@
-import { pendingPatches, stories } from '@/db/schema';
+import { likes, patches, pendingPatches, stories } from '@/db/schema';
 import { InferSelectModel } from 'drizzle-orm';
 
 export type NewUser = {
@@ -7,5 +7,10 @@ export type NewUser = {
   password: string | null;
 };
 
-export type Story = InferSelectModel<typeof stories>;
+export type Story = InferSelectModel<typeof stories> & {
+  allikes: InferSelectModel<typeof likes>[] | undefined;
+  patches: InferSelectModel<typeof patches>[] | undefined;
+};
+
+export type Like = InferSelectModel<typeof likes>;
 export type PendingPatch = InferSelectModel<typeof pendingPatches>;

@@ -64,7 +64,7 @@ export default function NewStory() {
       >
         <div className='grid gap-2'>
           <Label htmlFor='title' className='text-sm font-medium'>
-            Story Title
+            Title
           </Label>
           <Input
             id='title'
@@ -76,6 +76,9 @@ export default function NewStory() {
           />
         </div>
         <div className='space-y-2'>
+          <Label htmlFor='content' className='text-sm font-medium'>
+            Content
+          </Label>
           <Textarea
             placeholder='Start writing your story here...'
             rows={12}
@@ -85,12 +88,14 @@ export default function NewStory() {
           />
         </div>
         <div className='grid gap-2'>
-          <Suspense fallback={<div>wait...</div>}>
-            <Tiptap
-              content={content}
-              onChange={(newContent: string) => handleContentChange(newContent)}
-            />
-          </Suspense>
+          <Label htmlFor='content' className='text-sm font-medium'>
+            Story overview (note: write what you want this story to be or what
+            this story is about)
+          </Label>
+          <Tiptap
+            content={content}
+            onChange={(newContent: string) => handleContentChange(newContent)}
+          />
         </div>
         <Button
           className='w-full'

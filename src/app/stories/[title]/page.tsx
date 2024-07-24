@@ -1,13 +1,18 @@
 import { SubmitPatch } from './submit-patch';
 import { OnGoingSubmissions } from './ongoing-patches';
-import { getStroyPatches } from '@/server/stories';
+import { getStoryContributors, getStroyPatches } from '@/server/stories';
 import moment from 'moment';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LikeButton } from './like-btn';
+import { getCurrUser } from '@/server/users';
 
 export default async function Component({
   params,
 }: {
   params: { title: string };
 }) {
+  const user = await getCurrUser();
   const { error, storyPatches } = await getStroyPatches(
     params.title.replaceAll('_', ' ')
   );
@@ -38,13 +43,57 @@ export default async function Component({
             </div>
           ))}
         </div>
+        <div className='flex justify-start items-center gap-2 py-4 border-t mt-4'>
+          <LikeButton
+            user={user}
+            stroyId={storyPatches?.id!}
+            allLikes={storyPatches?.allikes}
+            likes={storyPatches?.likes ?? 0}
+          />
+        </div>
         <section className='bg-zinc-100 rounded p-4 my-6 space-y-6'>
-          <h5 className='text-xl font-bold'>Overview</h5>
+          <ContributorsSection storyId={storyPatches?.id!} />
+          <h5 className='text-xl font-bold'>Story Overview</h5>
           <div dangerouslySetInnerHTML={{ __html: storyPatches?.overview! }} />
         </section>
         {storyPatches && <SubmitPatch storyId={storyPatches.id} />}
         {storyPatches && <OnGoingSubmissions storyId={storyPatches.id} />}
       </article>
+    </div>
+  );
+}
+async function ContributorsSection(props: { storyId: string }) {
+  const { contributors, error } = await getStoryContributors(props.storyId);
+  if (error) {
+    return <Card className='text-destructive'>{error}</Card>;
+  }
+
+  return (
+    <div className=''>
+      <h5 className='text-xl font-bold'>Contributors</h5>
+      <div className='mt-4'>
+        {contributors?.length ? (
+          <div className='flex flex-wrap gap-6 justify-start items-center'>
+            {contributors.map(contributor => (
+              <div
+                key={contributor.id}
+                className=' flex justify-start items-center gap-4 p-1 group'
+              >
+                <div className='space-y-1'>
+                  <p className='text-sm font-medium text-gray-800 group-hover:text-primary duration-200'>
+                    {contributor.author}
+                  </p>
+                  <p className='text-xs text-gray-500'>
+                    {moment(contributor.createdAt).format('MMM D YYYY hA')}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className='text-sm text-gray-500'>No contributors yet.</p>
+        )}
+      </div>
     </div>
   );
 }

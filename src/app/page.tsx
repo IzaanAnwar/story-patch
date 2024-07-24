@@ -16,8 +16,8 @@ const Hero = () => {
       <p className='text-2xl mb-8 text-zinc-600'>
         Contribute to stories, one patch at a time.
       </p>
-      <Button className='text-xl'>
-        <Link href={'/stories'}>Read Stories</Link>
+      <Button className='text-xl px-6'>
+        <Link href={'/stories'}>Explore Stories</Link>
       </Button>
     </div>
   );

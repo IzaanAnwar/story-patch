@@ -6,6 +6,7 @@ import Toolbar from './Toolbar';
 import Underline from '@tiptap/extension-document';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from './ui/skeleton';
 
 export const Tiptap = ({ onChange, content }: any) => {
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,7 @@ export const Tiptap = ({ onChange, content }: any) => {
   };
   const editor = useEditor({
     extensions: [StarterKit, Underline],
+
     editorProps: {
       attributes: {
         class:
@@ -33,15 +35,21 @@ export const Tiptap = ({ onChange, content }: any) => {
   if (loading) {
     return (
       <div className='flex justify-center items-center w-full h-full'>
-        <Loader2 className='animate-spin' />
+        <Skeleton className='w-full h-[25vh]' />
       </div>
     );
   }
 
   return (
-    <div className='w-full px-4 '>
+    <div className='w-full rounded-md border border-input bg-background  text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'>
       <Toolbar editor={editor} content={content} />
-      <EditorContent style={{ whiteSpace: 'pre-line' }} editor={editor} />
+      <EditorContent
+        style={{
+          whiteSpace: 'pre-line',
+          caretColor: 'blueviolet',
+        }}
+        editor={editor}
+      />
     </div>
   );
 };

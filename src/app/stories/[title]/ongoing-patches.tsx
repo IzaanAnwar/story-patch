@@ -2,10 +2,18 @@ import { getPendingPatches } from '@/server/stories';
 import moment from 'moment';
 import VoteBtn from './VoteBtn';
 import { getCurrUser } from '@/server/users';
-import { redirect } from 'next/navigation';
 
 export async function OnGoingSubmissions({ storyId }: { storyId: string }) {
   const user = await getCurrUser();
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0); // Set to next midnight
+
+  const diff = midnight.getTime() - now.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  const timeRemaining = `${hours}h`;
 
   const { error, patches } = await getPendingPatches(storyId);
   if (error) return <div>{error}</div>;
@@ -14,7 +22,7 @@ export async function OnGoingSubmissions({ storyId }: { storyId: string }) {
       <h5>Submitted Patches</h5>
       <div className='flex justify-between items-center mb-4'>
         <p className='text-muted-foreground text-sm'>
-          Time remaining before merging: 2 hours
+          Time remaining before merging: {timeRemaining}
         </p>
       </div>
       <div className='grid gap-4'>

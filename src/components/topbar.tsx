@@ -21,19 +21,22 @@ export async function Topbar() {
       <nav className=' space-x-4 flex'>
         {isLoggedIn ? (
           <>
-            <Button>
-              <LogoutLink>Logout</LogoutLink>
+            <Button size={'sm'} variant={'ghost'} className='hidden md:flex'>
+              <Link href={'/stories'}>stories</Link>
             </Button>
-            <Button>
-              <Link href={'/new'}>Submit New Story</Link>
+            <Button size={'sm'} variant={'ghost'}>
+              <Link href={'/new'}>new story</Link>
+            </Button>
+            <Button size={'sm'} variant={'destructive'}>
+              <LogoutLink>logout</LogoutLink>
             </Button>
           </>
         ) : (
           <>
-            <Button>
+            <Button size={'sm'}>
               <LoginLink>Sign in</LoginLink>
             </Button>
-            <Button>
+            <Button size={'sm'} variant={'outline'}>
               <RegisterLink>Sign up</RegisterLink>
             </Button>
           </>
