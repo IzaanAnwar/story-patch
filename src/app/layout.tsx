@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import './globals.css';
 import { Topbar } from '@/components/topbar';
 import { ReactQueryProvider } from '@/providers/react-query';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         }}
       />
       <body className={inter.className}>
+        <NextTopLoader />
         <ReactQueryProvider>
           <>
             <Topbar />

@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { count, eq, sql } from 'drizzle-orm';
 import { patches, pendingPatches, votes } from '@/db/schema';
 import { PendingPatch } from '../../../../types';
+import { revalidatePath } from 'next/cache';
 
 type StoryPatchMap = {
   story_id: string;
@@ -90,6 +91,7 @@ export const POST = async (req: NextRequest) => {
               .delete(pendingPatches)
               .where(eq(pendingPatches.storyId, maxVotedPatch.storyId));
           });
+          revalidatePath('/stories/**');
         }
       }
     }

@@ -9,7 +9,7 @@ import Link from 'next/link';
 export default async function StoriesPage() {
   const { error, stories } = await getAllStrories();
   return (
-    <div className='container mx-auto px-4 py-12 md:px-6 lg:py-16'>
+    <div className='px-2 py-12 md:px-16 lg:px-32 lg:py-16'>
       <div className='grid gap-8'>
         <div className='grid gap-4'>
           <h1 className='text-3xl font-bold tracking-tight sm:text-4xl'>

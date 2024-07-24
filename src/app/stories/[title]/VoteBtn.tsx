@@ -29,19 +29,21 @@ export default function VoteBtn(props: {
   });
 
   return (
-    <Button
-      loading={voteMutation.isPending}
-      disabled={voteMutation.isPending}
-      variant='ghost'
-      size='icon'
-      onClick={() => voteMutation.mutate(props)}
-    >
-      <Flame
-        className={cn(props.fill && 'text-red-500')}
-        fill={props.fill ? 'red' : 'none'}
-        size={20}
-      />
-      <span className='sr-only'>Upvote</span>
-    </Button>
+    <>
+      <Button
+        loading={voteMutation.isPending}
+        disabled={voteMutation.isPending}
+        variant='ghost'
+        size='icon'
+        onClick={() => voteMutation.mutate(props)}
+      >
+        <Flame
+          className={cn(props.fill && 'text-red-500')}
+          fill={props.fill ? 'red' : 'none'}
+          size={20}
+        />
+        <span className='sr-only'>Upvote</span>
+      </Button>
+    </>
   );
 }
