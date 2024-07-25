@@ -18,7 +18,7 @@ export default async function Component({
   );
 
   return (
-    <div className='px-2 py-6 md:px-16 lg:px-32 lg:py-16'>
+    <div className='px-2 py-6 md:px-16 lg:px-32 lg:py-16 min-h-svh'>
       <article className='prose prose-gray mx-auto dark:prose-invert'>
         <div className='space-y-2 not-prose'>
           <h1 className='text-4xl font-extrabold tracking-tight lg:text-5xl lg:leading-[3.5rem]'>

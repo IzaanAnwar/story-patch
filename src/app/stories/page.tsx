@@ -61,7 +61,7 @@ export default function StoriesPage() {
   }
 
   return (
-    <div className='px-2 py-12 md:px-16 lg:px-32 lg:py-16'>
+    <div className='px-2 py-12 md:px-16 lg:px-32 lg:py-16 min-h-svh'>
       <div className='grid gap-8'>
         <div className='grid gap-4'>
           <h1 className='text-3xl font-bold tracking-tight sm:text-4xl'>
