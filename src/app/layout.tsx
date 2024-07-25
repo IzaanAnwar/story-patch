@@ -5,6 +5,7 @@ import './globals.css';
 import { Topbar } from '@/components/topbar';
 import { ReactQueryProvider } from '@/providers/react-query';
 import NextTopLoader from 'nextjs-toploader';
+import Footer from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           <>
             <Topbar />
             {children}
+            <Footer />
           </>
         </ReactQueryProvider>
       </body>
