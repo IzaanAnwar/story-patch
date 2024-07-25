@@ -1,6 +1,8 @@
 import { db } from '@/db';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export const GET = async (req: NextRequest) => {
   try {
     const allStories = await db.query.stories.findMany({

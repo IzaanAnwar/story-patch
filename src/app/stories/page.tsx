@@ -8,12 +8,7 @@ import {
   UserIcon,
   UsersIcon,
 } from 'lucide-react';
-import { Like, Story } from '../../../types';
-import {
-  getAllStrories,
-  getStoryContributors,
-  likeStrory,
-} from '@/server/stories';
+import { Story } from '../../../types';
 import moment from 'moment';
 import Link from 'next/link';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -21,12 +16,11 @@ import { toast } from 'sonner';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useKindeAuth } from '@kinde-oss/kinde-auth-nextjs';
-import { getCurrUser } from '@/server/users';
 import { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types';
+import { likeStrory } from '@/server/stories';
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([]);
-  const [reFetch, setRefetch] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const userQuery = useQuery({
@@ -39,7 +33,7 @@ export default function StoriesPage() {
       }
     },
   });
-  console.log({ userQuery });
+  console.log({ stories });
 
   useEffect(() => {
     setLoading(true);
@@ -53,17 +47,14 @@ export default function StoriesPage() {
       }
     };
     try {
-      if (reFetch) {
-        fetchStories().then(() => {
-          setLoading(false);
-          setRefetch(false);
-        });
-      }
+      fetchStories().then(() => {
+        setLoading(false);
+      });
     } catch (error: any) {
       setError(error?.message);
       setLoading(false);
     }
-  }, [reFetch]);
+  }, []);
   if (error) {
     toast.error(error);
     setError('');
