@@ -11,9 +11,9 @@ export async function OnGoingSubmissions({ storyId }: { storyId: string }) {
 
   const diff = midnight.getTime() - now.getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
-  // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  const timeRemaining = `${hours}h`;
+  const timeRemaining = `${hours}h ${minutes}m`;
 
   const { error, patches } = await getPendingPatches(storyId);
   if (error) return <div>{error}</div>;
