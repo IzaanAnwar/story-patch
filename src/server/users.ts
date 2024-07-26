@@ -35,14 +35,14 @@ export async function createUser() {
   }
 }
 
-export async function getProfileDetails(name: string) {
+export async function getProfileDetails(id: string) {
   try {
-    const username = z.string().safeParse(name);
-    if (username.error) {
-      throw new Error('Invalid username');
+    const userId = z.string().safeParse(id);
+    if (userId.error) {
+      throw new Error('Invalid user id');
     }
     const user = await db.query.users.findFirst({
-      where: eq(users.name, username.data),
+      where: eq(users.id, userId.data),
     });
 
     if (!user) {

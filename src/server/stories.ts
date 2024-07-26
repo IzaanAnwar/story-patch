@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 
 const storySchema = z.object({
   title: z.string().min(1),
-  content: z.string().min(100).max(1000),
+  content: z.string().min(100).max(10000),
   overview: z.string().min(1),
 });
 
@@ -99,7 +99,7 @@ export async function getStoryContributors(id: string) {
 }
 
 const storyPatchSchema = z.object({
-  content: z.string().min(100).max(1000),
+  content: z.string().min(100).max(10000),
   storyId: z.string(),
 });
 export async function createStoryPatch(data: z.infer<typeof storyPatchSchema>) {

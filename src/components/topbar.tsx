@@ -6,12 +6,10 @@ import {
 } from '@kinde-oss/kinde-auth-nextjs/components';
 
 import { Button } from '@/components/ui/button';
-import { MountainIcon } from 'lucide-react';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { getCurrUser } from '@/server/users';
 
 export async function Topbar() {
-  const { isAuthenticated } = getKindeServerSession();
-  const isLoggedIn = await isAuthenticated();
+  const user = await getCurrUser();
   return (
     <header className='flex h-16 w-full items-center justify-between bg-background px-2 md:px-16 lg:px-32 border-b'>
       <Link href='/' className='flex items-center' prefetch={false}>
@@ -19,13 +17,16 @@ export async function Topbar() {
         <span className='ml-2 text-lg font-semibold'>Storypatch</span>
       </Link>
       <nav className=' space-x-4 flex'>
-        {isLoggedIn ? (
+        {user?.id ? (
           <>
             <Button size={'sm'} variant={'ghost'} className='hidden md:flex'>
               <Link href={'/stories'}>stories</Link>
             </Button>
             <Button size={'sm'} variant={'ghost'}>
               <Link href={'/new'}>new story</Link>
+            </Button>
+            <Button size={'sm'} variant={'ghost'}>
+              <Link href={`/profile/${user.id}`}>profile</Link>
             </Button>
             <Button size={'sm'} variant={'destructive'}>
               <LogoutLink>logout</LogoutLink>

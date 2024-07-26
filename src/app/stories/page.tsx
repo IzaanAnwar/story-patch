@@ -33,7 +33,6 @@ export default function StoriesPage() {
       }
     },
   });
-  console.log({ stories });
 
   useEffect(() => {
     setLoading(true);
