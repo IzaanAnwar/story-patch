@@ -27,7 +27,7 @@ const Profile = async ({ params }: { params: { userid: string } }) => {
     );
   }
   return (
-    <div className=' px-4 md:px-16 py-16 lg:px-32 h-screen space-y-12'>
+    <div className=' px-4 md:px-16 py-16 lg:px-32 min-h-screen space-y-12'>
       <div className='flex justify-start items-center gap-4'>
         <Avatar className='border-primary border-2'>
           <AvatarImage
