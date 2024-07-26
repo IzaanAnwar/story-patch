@@ -7,6 +7,10 @@ export const GET = async (req: NextRequest) => {
   try {
     const allStories = await db.query.stories.findMany({
       with: { allikes: true, patches: true },
+      orderBy: (stories, { desc }) => [
+        desc(stories.likes),
+        desc(stories.createdAt),
+      ],
     });
 
     return NextResponse.json({

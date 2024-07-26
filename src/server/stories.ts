@@ -22,7 +22,7 @@ export async function createStory(data: z.infer<typeof storySchema>) {
     console.log({ storyData });
 
     await db.insert(stories).values({
-      title: storyData.title,
+      title: storyData.title.trim(),
       content: storyData.content,
       author: user.username! ?? user.given_name ?? user.family_name,
       authorId: user.id,
@@ -58,7 +58,12 @@ export async function createStory(data: z.infer<typeof storySchema>) {
 
 export async function getAllStrories() {
   try {
-    const allStories = await db.query.stories.findMany();
+    const allStories = await db.query.stories.findMany({
+      orderBy: (stories, { desc, asc }) => [
+        desc(stories.likes),
+        asc(stories.createdAt),
+      ],
+    });
     console.log('GOt em');
 
     return {
@@ -157,6 +162,7 @@ export async function getStroyPatches(data: string) {
         allikes: true,
       },
     });
+
     return {
       error: null,
       storyPatches,
