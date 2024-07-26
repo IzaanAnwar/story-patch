@@ -2,7 +2,13 @@ import { SubmitPatch } from './submit-patch';
 import { OnGoingSubmissions } from './ongoing-patches';
 import { getStoryContributors, getStroyPatches } from '@/server/stories';
 import moment from 'moment';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LikeButton } from './like-btn';
 import { getCurrUser } from '@/server/users';
@@ -13,9 +19,21 @@ export default async function Component({
   params: { title: string };
 }) {
   const user = await getCurrUser();
-  const { error, storyPatches } = await getStroyPatches(
-    params.title.replaceAll('_', ' ')
-  );
+  const decodedParam = decodeURIComponent(params.title);
+
+  const { error, storyPatches } = await getStroyPatches(decodedParam);
+
+  if (error) {
+    return (
+      <Card className='bg-inherit'>
+        <CardHeader className='bg-inherit'>
+          <CardDescription className='text-destructive'>
+            {error}
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
 
   return (
     <div className='px-2 py-6 md:px-16 lg:px-32 lg:py-16 min-h-svh'>
@@ -54,7 +72,11 @@ export default async function Component({
         <section className='bg-zinc-100 rounded p-4 my-6 space-y-6'>
           <ContributorsSection storyId={storyPatches?.id!} />
           <h5 className='text-xl font-bold'>Story Overview</h5>
-          <div dangerouslySetInnerHTML={{ __html: storyPatches?.overview! }} />
+          <div
+            dangerouslySetInnerHTML={{
+              __html: storyPatches?.overview ?? '<p>Something went wrong</p>',
+            }}
+          />
         </section>
         {storyPatches && <SubmitPatch storyId={storyPatches.id} />}
         {storyPatches && <OnGoingSubmissions storyId={storyPatches.id} />}

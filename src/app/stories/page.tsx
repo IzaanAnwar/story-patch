@@ -204,10 +204,7 @@ function StoryCard({
             <span>{moment(story.updatedAt).fromNow()}</span>
           </div>
         </div>
-        <Link
-          className='block max-w-full '
-          href={`stories/${story.title?.replaceAll(' ', '_')}`}
-        >
+        <Link className='block max-w-full ' href={`stories/${story.title}`}>
           <h3 className='text-xl font-semibold group-hover:text-primary duration-200'>
             {story.title}
           </h3>
