@@ -40,7 +40,7 @@ export default async function Component({
       <article className='prose prose-gray mx-auto dark:prose-invert'>
         <div className='space-y-2 not-prose'>
           <h1 className='text-4xl font-extrabold tracking-tight lg:text-5xl lg:leading-[3.5rem]'>
-            {storyPatches?.title}
+            {storyPatches?.name}
           </h1>
           <p className='text-muted-foreground'>{storyPatches?.author}</p>
         </div>

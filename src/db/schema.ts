@@ -1,12 +1,20 @@
 import { relations } from 'drizzle-orm';
 import { timestamp, pgTable, text, integer } from 'drizzle-orm/pg-core';
 
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name'),
+  image: text('image'),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const stories = pgTable('stories', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  title: text('name').unique(),
-  content: text('email').notNull().unique(),
+  name: text('name').unique(),
+  content: text('content').notNull().unique(),
   author: text('author').notNull(),
   authorId: text('author_id').notNull(),
   overview: text('overview').notNull(),

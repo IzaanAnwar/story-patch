@@ -22,12 +22,13 @@ export async function createStory(data: z.infer<typeof storySchema>) {
     console.log({ storyData });
 
     await db.insert(stories).values({
-      title: storyData.title.trim(),
+      name: storyData.title.trim(),
       content: storyData.content,
       author: user.username! ?? user.given_name ?? user.family_name,
       authorId: user.id,
       overview: storyData.overview,
     });
+
     revalidatePath('/stories');
     return { success: true, message: 'Story created successfully' };
   } catch (error: any) {
@@ -156,7 +157,7 @@ export async function getStroyPatches(data: string) {
     const storyTitle = z.string().parse(data);
 
     const storyPatches = await db.query.stories.findFirst({
-      where: eq(stories.title, storyTitle),
+      where: eq(stories.name, storyTitle),
       with: {
         patches: true,
         allikes: true,
